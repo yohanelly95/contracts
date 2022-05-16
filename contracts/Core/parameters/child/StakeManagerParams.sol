@@ -64,6 +64,7 @@ abstract contract StakeManagerParams is ACL, IStakeManagerParams, Constants {
     }
 
     /// @inheritdoc IStakeManagerParams
+    //solhint-disable-next-line max-line-length
     function setEpochLimitForUpdateCommission(uint16 _epochLimitForUpdateCommission) external override onlyRole(GOVERNANCE_ROLE) {
         // slither-disable-next-line events-maths
         epochLimitForUpdateCommission = _epochLimitForUpdateCommission;

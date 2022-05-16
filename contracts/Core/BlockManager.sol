@@ -182,6 +182,7 @@ contract BlockManager is Initializable, BlockStorage, StateManager, BlockManager
         require(blocks[epoch].proposerId == 0, "Block already confirmed");
 
         if (sortedProposedBlockIds[epoch].length != 0 && blockIndexToBeConfirmed != -1) {
+            // solhint-disable-next-line max-line-length
             uint32 proposerId = proposedBlocks[epoch][sortedProposedBlockIds[epoch][uint8(blockIndexToBeConfirmed)]].proposerId;
             require(proposerId == stakerId, "Block Proposer mismatches");
             _confirmBlock(epoch, proposerId);
@@ -287,6 +288,7 @@ contract BlockManager is Initializable, BlockStorage, StateManager, BlockManager
 
             // binary search
             // impl taken and modified from
+            // solhint-disable-next-line max-line-length
             // https://github.com/compound-finance/compound-protocol/blob/4a8648ec0364d24c4ecfc7d6cae254f55030d65f/contracts/Governance/Comp.sol#L207
             uint256 lower = 0;
             uint256 upper = _block.ids.length - 1;
@@ -329,6 +331,7 @@ contract BlockManager is Initializable, BlockStorage, StateManager, BlockManager
         uint32 blockId = sortedProposedBlockIds[epoch][blockIndex];
         require(proposedBlocks[epoch][blockId].valid, "Block already has been disputed");
         require(index0 < index1, "index1 not greater than index0 0");
+        // solhint-disable-next-line max-line-length
         require(proposedBlocks[epoch][blockId].ids[index0] >= proposedBlocks[epoch][blockId].ids[index1], "ID at i0 not gt than of i1");
         _executeDispute(epoch, blockIndex, blockId);
     }
@@ -348,6 +351,7 @@ contract BlockManager is Initializable, BlockStorage, StateManager, BlockManager
         uint256 postionOfCollectionInBlock
     ) external initialized checkEpochAndState(State.Dispute, epoch, buffer) {
         require(
+            // solhint-disable-next-line max-line-length
             disputes[epoch][msg.sender].accWeight == voteManager.getTotalInfluenceRevealed(epoch, disputes[epoch][msg.sender].leafId),
             "TIR is wrong"
         ); // TIR : total influence revealed

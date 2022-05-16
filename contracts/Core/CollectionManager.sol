@@ -82,6 +82,7 @@ contract CollectionManager is Initializable, CollectionStorage, StateManager, Co
      * @param voteManagerAddress The address of the Vote Manager contract
      * @param blockManagerAddress The address of the Block Manager contract
      */
+     //solhint-disable-next-line max-line-length
     function initialize(address voteManagerAddress, address blockManagerAddress) external initializer onlyRole(DEFAULT_ADMIN_ROLE) {
         voteManager = IVoteManager(voteManagerAddress);
         blockManager = IBlockManager(blockManagerAddress);
@@ -204,7 +205,7 @@ contract CollectionManager is Initializable, CollectionStorage, StateManager, Co
         }
 
         numCollections = numCollections + 1;
-
+        // solhint-disable-next-line max-line-length
         collections[numCollections] = Structs.Collection(true, numCollections, power, tolerance, aggregationMethod, jobIDs, name);
 
         numActiveCollections = numActiveCollections + 1;
@@ -215,6 +216,7 @@ contract CollectionManager is Initializable, CollectionStorage, StateManager, Co
         emit CollectionCreated(numCollections, block.timestamp);
 
         _setIDName(name, numCollections);
+        // solhint-disable-next-line max-line-length
         voteManager.storeDepth(_getDepth()); // TODO : Create method called as createCollectionBatch and update storeDepth only once
     }
 
@@ -357,7 +359,8 @@ contract CollectionManager is Initializable, CollectionStorage, StateManager, Co
     }
 
     /**
-     * @dev updates the collectionIdToLeafIdRegistry and leafIdToCollectionIdRegistry everytime a collection has been activated/deactivated/created
+     * @dev updates the collectionIdToLeafIdRegistry and leafIdToCollectionIdRegistry
+      everytime a collection has been activated/deactivated/created
      */
     function _updateRegistry() internal {
         uint16 j = 0;
@@ -373,7 +376,8 @@ contract CollectionManager is Initializable, CollectionStorage, StateManager, Co
     }
 
     /**
-     * @dev updates the collectionIdToLeafIdRegistryOfLastEpoch whenever a collection status is changed or new collection is created
+     * @dev updates the collectionIdToLeafIdRegistryOfLastEpoch whenever a collection status
+      is changed or new collection is created
      */
     function _updateDelayedRegistry() internal {
         uint16 j = 0;
@@ -404,6 +408,7 @@ contract CollectionManager is Initializable, CollectionStorage, StateManager, Co
      */
     function _getDepth() internal view returns (uint256 n) {
         // numActiveCollection is uint16, so further range not needed
+        //solhint-disable-next-line max-line-length
         // Inspired and modified from : https://medium.com/coinmonks/math-in-solidity-part-5-exponent-and-logarithm-9aef8515136e
         // TODO : Looks like there is better version compared in gas
         // https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity/32900
