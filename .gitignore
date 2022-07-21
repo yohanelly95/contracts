@@ -5,6 +5,9 @@ coverage.json
 cache/
 deployed/mumbai/abi
 abi
+out
+lib
+forge-cache
 .env
 .env.mumbai
 .env.local
