@@ -6,7 +6,7 @@ cache/
 deployed/mumbai/abi
 abi
 out
-lib/
+lib/forge-std
 forge-cache
 .gitmodules
 .env
