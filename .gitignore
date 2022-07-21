@@ -8,6 +8,7 @@ abi
 out
 lib
 forge-cache
+.gitmodules
 .env
 .env.mumbai
 .env.local
