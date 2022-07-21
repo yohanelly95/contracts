@@ -5,4 +5,5 @@ libs = ['node_modules', 'lib']
 test = 'test/foundry'
 cache_path  = 'forge-cache'
 auto_detect_solc = true
+remappings = ['@openzeppelin/=node_modules/@openzeppelin/','ds-test/=lib/forge-std/lib/ds-test/src/','eth-gas-reporter/=node_modules/eth-gas-reporter/','forge-std/=lib/forge-std/src/','hardhat/=node_modules/hardhat/']
 # See more config options https://book.getfoundry.sh/reference/config.html
