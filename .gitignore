@@ -6,6 +6,7 @@ cache/
 deployed/mumbai/abi
 abi
 out
+/broadcast
 lib/forge-std
 forge-cache
 .gitmodules

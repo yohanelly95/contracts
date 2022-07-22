@@ -31,5 +31,5 @@ local-node: setup-yarn
 	yarn hardhat node 
 
 deploy:
-	forge create Delegator --private-key ${PRIVATE_KEY} # --rpc-url ${PROVIDER_URL}
+	forge script Delegator --private-key ${PRIVATE_KEY} # --rpc-url ${PROVIDER_URL}
 	
