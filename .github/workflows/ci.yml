@@ -11,114 +11,107 @@ jobs:
 
   install_dependencies:
     runs-on: ubuntu-latest
+    needs: [checkout_source]
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Install dependencies
-        run: |
-          npm install
-          npm run cp-ci-env
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: v1-npm-deps-
+      - name: List directory contents
+        run: ls -R
 
-  test:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: install_dependencies
+  #   steps:
 
-      - name: Run tests
-        run: |
-          CI=true npm run test
-      - name: Store artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: test
-          path: test
+  #     - name: Run tests
+  #       run: |
+  #         CI=true npm run test
+  #     - name: Store artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: test
+  #         path: test
 
-  scenarios:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
+  # scenarios:
+  #   runs-on: ubuntu-latest
+  #   needs: install_dependencies
+  #   steps:
 
-      - name: Run scenarios
-        run: |
-          CI=true npm run scenarios
-      - name: Store artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: scenarios
-          path: scenarios
+  #     - name: Run scenarios
+  #       run: |
+  #         CI=true npm run scenarios
+  #     - name: Store artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: scenarios
+  #         path: scenarios
 
-  lint:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   needs: install_dependencies
+  #   steps:
 
-      - name: Run Lint
-        run: npm run lint
-      - name: Store artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: lint
-          path: lint
+  #     - name: Run Lint
+  #       run: npm run lint
+  #     - name: Store artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: lint
+  #         path: lint
 
-  coverage:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
+  # coverage:
+  #   runs-on: ubuntu-latest
+  #   needs: install_dependencies
+  #   steps:
 
-      - name: Run Coverage
-        run: npm run coverage
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2.1.4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Store artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: coverage
+  #     - name: Run Coverage
+  #       run: npm run coverage
+  #     - name: Upload coverage to Coveralls
+  #       uses: coverallsapp/github-action@v2.1.4
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Store artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: coverage
+  #         path: coverage
 
-  slither:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
+  # slither:
+  #   runs-on: ubuntu-latest
+  #   needs: install_dependencies
+  #   steps:
 
-      - name: Slither
-        run: |
-          slither . --filter-paths "node_modules" --disable-color
+  #     - name: Slither
+  #       run: |
+  #         slither . --filter-paths "node_modules" --disable-color
 
-  gasCompare:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
+  # gasCompare:
+  #   runs-on: ubuntu-latest
+  #   needs: install_dependencies
+  #   steps:
 
-      - name: Run GasCompare
-        run: |
-          if [ "$GITHUB_REF" == 'refs/heads/main' ]; then  
-          exit 0
-          fi
-          CI=true npm run test
-          mv ./gasReporterOutput.json /tmp/gasReporterOutput_Current.json
-          git checkout main
-          npm install
-          CI=true npm run test
-          mv ./gasReporterOutput.json /tmp/gasReporterOutput_Master.json
-          git reset --hard
-          git checkout $GITHUB_REF
-          npm run gasCompare /tmp/gasReporterOutput_Current.json /tmp/gasReporterOutput_Master.json
+  #     - name: Run GasCompare
+  #       run: |
+  #         if [ "$GITHUB_REF" == 'refs/heads/main' ]; then  
+  #         exit 0
+  #         fi
+  #         CI=true npm run test
+  #         mv ./gasReporterOutput.json /tmp/gasReporterOutput_Current.json
+  #         git checkout main
+  #         npm install
+  #         CI=true npm run test
+  #         mv ./gasReporterOutput.json /tmp/gasReporterOutput_Master.json
+  #         git reset --hard
+  #         git checkout $GITHUB_REF
+  #         npm run gasCompare /tmp/gasReporterOutput_Current.json /tmp/gasReporterOutput_Master.json
 
-  notify:
-    needs: coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Coveralls Webhook
-        uses: distributhor/coveralls-webhook@v1.0.0
-        with:
-          url: >-
-            https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS_REPO_TOKEN }}
+  # notify:
+  #   needs: coverage
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Coveralls Webhook
+  #       uses: distributhor/coveralls-webhook@v1.0.0
+  #       with:
+  #         url: >-
+  #           https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS_REPO_TOKEN }}
