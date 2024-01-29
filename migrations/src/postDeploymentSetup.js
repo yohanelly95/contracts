@@ -6,6 +6,7 @@ const {
   getJobs,
   getCollections,
   waitForConfirmState,
+  sleep,
 } = require('../migrationHelpers');
 
 const { BigNumber } = ethers;
@@ -75,18 +76,21 @@ module.exports = async () => {
 
   const pendingTransactions = [];
   const stakerAddressList = STAKER_ADDRESSES.split(',');
-
-  // Only transfer tokens in testnets
+  let nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
+  //   Only transfer tokens in testnets
   if (NETWORK_TYPE === 'TESTNET') {
     // Add new instance of StakeManager contract & Deployer address as Minter
-
     const supply = (BigNumber.from(10).pow(BigNumber.from(23))).mul(BigNumber.from(5));
-
-    await RAZOR.transfer(stakeManagerAddress, supply);
-
+    const estimatedGas = await RAZOR.estimateGas.transfer(stakeManagerAddress, supply);
+    const gasPrice = ethers.utils.parseUnits('100', 'gwei'); // Example gas price, adjust based on current network conditions
+    const tx = await RAZOR.transfer(stakeManagerAddress, supply, { nonce: nonce++, gasLimit: estimatedGas.mul(2), gasPrice });
+    await tx.wait();
     for (let i = 0; i < stakerAddressList.length; i++) {
-      const tx = await RAZOR.transfer(stakerAddressList[i], SEED_AMOUNT);
-      pendingTransactions.push(tx);
+      console.log(stakerAddressList[i]);
+      nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
+      const tx = await RAZOR.transfer(stakerAddressList[i], SEED_AMOUNT, { nonce: nonce++, gasLimit: estimatedGas.mul(2), gasPrice });
+      await tx.wait();
+      //   pendingTransactions.push(tx);
     }
   }
 
@@ -96,39 +100,42 @@ module.exports = async () => {
     await ethers.provider.send('evm_setIntervalMining', [MINING_INTERVAL]);
   }
 
-  pendingTransactions.push(await collectionManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await blockManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await rewardManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await stakeManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await voteManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await delegator.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await randomNoManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
+  pendingTransactions.push(await collectionManager.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await blockManager.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await rewardManager.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await voteManager.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await delegator.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await randomNoManager.grantRole(GOVERNANCE_ROLE, governanceAddress, { nonce: nonce++ }));
 
-  pendingTransactions.push(await blockManager.grantRole(BLOCK_CONFIRMER_ROLE, voteManagerAddress));
-  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, voteManagerAddress));
-  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, stakeManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, rewardManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, voteManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(ESCAPE_HATCH_ROLE, signers[0].address));
-  pendingTransactions.push(await collectionManager.grantRole(REGISTRY_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await collectionManager.grantRole(COLLECTION_MODIFIER_ROLE, signers[0].address));
-  pendingTransactions.push(await stakeManager.grantRole(PAUSE_ROLE, signers[0].address));
-  pendingTransactions.push(await governance.grantRole(GOVERNER_ROLE, signers[0].address));
-  pendingTransactions.push(await voteManager.grantRole(SALT_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await voteManager.grantRole(DEPTH_MODIFIER_ROLE, collectionManagerAddress));
+  pendingTransactions.push(await blockManager.grantRole(BLOCK_CONFIRMER_ROLE, voteManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, blockManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, voteManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, stakeManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, rewardManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, blockManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, voteManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.grantRole(ESCAPE_HATCH_ROLE, signers[0].address, { nonce: nonce++ }));
+  pendingTransactions.push(await collectionManager.grantRole(REGISTRY_MODIFIER_ROLE, blockManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await collectionManager.grantRole(COLLECTION_MODIFIER_ROLE, signers[0].address, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.grantRole(PAUSE_ROLE, signers[0].address, { nonce: nonce++ }));
+  pendingTransactions.push(await governance.grantRole(GOVERNER_ROLE, signers[0].address, { nonce: nonce++ }));
+  pendingTransactions.push(await voteManager.grantRole(SALT_MODIFIER_ROLE, blockManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await voteManager.grantRole(DEPTH_MODIFIER_ROLE, collectionManagerAddress, { nonce: nonce++ }));
 
   pendingTransactions.push(await blockManager.initialize(stakeManagerAddress, rewardManagerAddress, voteManagerAddress,
-    collectionManagerAddress, randomNoManagerAddress));
-  pendingTransactions.push(await voteManager.initialize(stakeManagerAddress, rewardManagerAddress, blockManagerAddress, collectionManagerAddress));
-  pendingTransactions.push(await stakeManager.initialize(RAZORAddress, rewardManagerAddress, voteManagerAddress, stakedTokenFactoryAddress));
-  pendingTransactions.push(await rewardManager.initialize(stakeManagerAddress, voteManagerAddress, blockManagerAddress, collectionManagerAddress));
-  pendingTransactions.push(await delegator.updateAddress(collectionManagerAddress, randomNoManagerAddress));
-  pendingTransactions.push(await randomNoManager.initialize(blockManagerAddress));
+    collectionManagerAddress, randomNoManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await voteManager.initialize(stakeManagerAddress, rewardManagerAddress,
+    blockManagerAddress, collectionManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await stakeManager.initialize(RAZORAddress, rewardManagerAddress, voteManagerAddress,
+    stakedTokenFactoryAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await rewardManager.initialize(stakeManagerAddress, voteManagerAddress, blockManagerAddress,
+    collectionManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await delegator.updateAddress(collectionManagerAddress, randomNoManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await randomNoManager.initialize(blockManagerAddress, { nonce: nonce++ }));
   pendingTransactions.push(await governance.initialize(blockManagerAddress, rewardManagerAddress, stakeManagerAddress,
-    voteManagerAddress, collectionManagerAddress, randomNoManagerAddress));
-  pendingTransactions.push(await collectionManager.initialize(voteManagerAddress, blockManagerAddress));
+    voteManagerAddress, collectionManagerAddress, randomNoManagerAddress, { nonce: nonce++ }));
+  pendingTransactions.push(await collectionManager.initialize(voteManagerAddress, blockManagerAddress, { nonce: nonce++ }));
 
   console.log('Waiting for post-deployment setup transactions to get confirmed');
   for (let i = 0; i < pendingTransactions.length; i++) {
@@ -138,22 +145,23 @@ module.exports = async () => {
   const jobs = await getJobs();
   const collections = await getCollections();
   console.log('Creating Jobs');
-
   for (let i = 0; i < jobs.length; i++) {
     const job = jobs[i];
     await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url);
     console.log(`Job Created :  ${job.name}`);
   }
-
-  console.log('Creating Collections');
+  nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
+  console.log('Creating Collections', nonce);
   console.log('Waiting for Confirm state : 4.......');
   const numStates = await stakeManager.NUM_STATES();
   const stateLength = (BigNumber.from(await stakeManager.EPOCH_LENGTH())).div(numStates);
-
   for (let i = 0; i < collections.length; i++) {
+    nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
     await waitForConfirmState(numStates, stateLength);
     const collection = collections[i];
-    await collectionManager.createCollection(collection.tolerance, collection.power, collection.aggregationMethod, collection.jobIDs, collection.name);
+    const tx = await collectionManager.createCollection(collection.tolerance, collection.power, collection.aggregationMethod,
+      collection.jobIDs, collection.name, { nonce: nonce++ });
+    tx.wait();
     console.log(`Collection Created :  ${collection.name}`);
   }
   console.log('Contracts deployed successfully & initial setup is done');

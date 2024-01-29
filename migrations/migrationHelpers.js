@@ -26,6 +26,10 @@ const appendDeploymentFile = async (data) => {
   await jsonfile.writeFile(DEPLOYMENT_FILE, { ...deployments, ...data });
 };
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const deployContract = async (
   contractName,
   linkDependecies = [],
@@ -56,25 +60,24 @@ const deployContract = async (
   );
 
   await contract.deployed();
+  //   try {
+  //     await hre.tenderly.persistArtifacts({
+  //       name: contractName,
+  //       address: contract.address,
+  //     });
 
-  try {
-    await hre.tenderly.persistArtifacts({
-      name: contractName,
-      address: contract.address,
-    });
+  //     await hre.tenderly.push({
+  //       name: contractName,
+  //       address: contract.address,
+  //     });
 
-    await hre.tenderly.push({
-      name: contractName,
-      address: contract.address,
-    });
-
-    await hre.tenderly.verify({
-      name: contractName,
-      address: contract.address,
-    });
-  } catch (err) {
-    console.log('Error pushing to tenderly:', err);
-  }
+  //     await hre.tenderly.verify({
+  //       name: contractName,
+  //       address: contract.address,
+  //     });
+  //   } catch (err) {
+  //     console.log('Error pushing to tenderly:', err);
+  //   }
 
   await appendDeploymentFile({ [contractName]: contract.address });
   console.log(`${contractName} deployed to: ${contract.address}`);
@@ -124,11 +127,11 @@ const getdeployedContractInstance = async (
   return { Contract, contractInstance };
 };
 
-const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master';
+const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master/';
 
 const getJobs = async () => {
   try {
-    const jobs = await axios.get(`${SOURCE}/jobs.json`);
+    const jobs = await axios.get(`${SOURCE}/mainnet/jobs.json`);
     return jobs.data;
   } catch (error) {
     console.log('Error while fetching jobs', error.response.body);
@@ -138,7 +141,7 @@ const getJobs = async () => {
 
 const getCollections = async () => {
   try {
-    const collections = await axios.get(`${SOURCE}/collections.json`);
+    const collections = await axios.get(`${SOURCE}/mainnet/collections.json`);
     return collections.data;
   } catch (error) {
     console.log('Error while fetching collections', error.response.body);
@@ -160,16 +163,12 @@ const currentState = async (numStates, stateLength) => {
   }
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const waitForConfirmState = async (numStates, stateLength) => {
   let state = await currentState(numStates, stateLength);
   while (state !== 4) {
     state = await currentState(numStates, stateLength);
     console.log('Current state', state);
-    await sleep(10000);
+    await sleep(2000);
   }
 };
 

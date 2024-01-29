@@ -32,6 +32,7 @@ const ENV_CHAIN_IDS = {
   mainnet: 1,
   goerli: 5,
   mumbai: 80001,
+  xdcTestnet: 51,
 };
 
 module.exports = {
@@ -89,6 +90,12 @@ module.exports = {
       url: PROVIDER_URL || '',
       accounts: { mnemonic: MNEMONIC },
       chainId: ENV_CHAIN_IDS[NETWORK],
+      timeout: 300000,
+    },
+    xdcTestnet: {
+      chainId: 51,
+      url: 'https://apothem.xdcrpc.com',
+      accounts: [process.env.PRIVATE_KEY || '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'],
       timeout: 300000,
     },
   },
