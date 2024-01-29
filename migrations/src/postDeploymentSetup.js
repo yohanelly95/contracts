@@ -146,8 +146,11 @@ module.exports = async () => {
   const collections = await getCollections();
   console.log('Creating Jobs');
   for (let i = 0; i < jobs.length; i++) {
+    nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
+
     const job = jobs[i];
-    await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url);
+    const tx = await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url, { nonce: nonce++ });
+    await tx.wait();
     console.log(`Job Created :  ${job.name}`);
   }
   nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
@@ -156,6 +159,7 @@ module.exports = async () => {
   const numStates = await stakeManager.NUM_STATES();
   const stateLength = (BigNumber.from(await stakeManager.EPOCH_LENGTH())).div(numStates);
   for (let i = 0; i < collections.length; i++) {
+    await sleep(10000);
     nonce = await ethers.provider.getTransactionCount(signers[0].address, 'latest');
     await waitForConfirmState(numStates, stateLength);
     const collection = collections[i];
