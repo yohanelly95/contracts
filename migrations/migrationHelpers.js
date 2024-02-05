@@ -124,11 +124,11 @@ const getdeployedContractInstance = async (
   return { Contract, contractInstance };
 };
 
-const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master';
+const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master/';
 
 const getJobs = async () => {
   try {
-    const jobs = await axios.get(`${SOURCE}/jobs.json`);
+    const jobs = await axios.get(`${SOURCE}/testnet/jobs.json`);
     return jobs.data;
   } catch (error) {
     console.log('Error while fetching jobs', error.response.body);
@@ -138,7 +138,7 @@ const getJobs = async () => {
 
 const getCollections = async () => {
   try {
-    const collections = await axios.get(`${SOURCE}/collections.json`);
+    const collections = await axios.get(`${SOURCE}/testnet/collections.json`);
     return collections.data;
   } catch (error) {
     console.log('Error while fetching collections', error.response.body);
