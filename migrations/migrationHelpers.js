@@ -26,6 +26,10 @@ const appendDeploymentFile = async (data) => {
   await jsonfile.writeFile(DEPLOYMENT_FILE, { ...deployments, ...data });
 };
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const deployContract = async (
   contractName,
   linkDependecies = [],
@@ -49,13 +53,19 @@ const deployContract = async (
   } else {
     Contract = await ethers.getContractFactory(contractName);
   }
-  const contract = await Contract.deploy(...constructorParams);
+  const gasPrice = await ethers.provider.getGasPrice();
+
+  const contract = await Contract.deploy(...constructorParams, {
+    maxFeePerGas: ethers.utils.parseUnits('0.1', 'gwei'), // Adjust multiplier as needed
+    maxPriorityFeePerGas: ethers.utils.parseUnits('0.1', 'gwei'), // Adjust value as needed
+  });
 
   console.log(
     `${contractName} deployment tx.hash = ${contract.deployTransaction.hash} ...`
   );
 
   await contract.deployed();
+  await sleep(12000);
 
   try {
     await hre.tenderly.persistArtifacts({
@@ -124,7 +134,7 @@ const getdeployedContractInstance = async (
   return { Contract, contractInstance };
 };
 
-const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master';
+const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master/testnet/';
 
 const getJobs = async () => {
   try {
@@ -160,16 +170,12 @@ const currentState = async (numStates, stateLength) => {
   }
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const waitForConfirmState = async (numStates, stateLength) => {
   let state = await currentState(numStates, stateLength);
   while (state !== 4) {
     state = await currentState(numStates, stateLength);
     console.log('Current state', state);
-    await sleep(10000);
+    await sleep(1000);
   }
 };
 

@@ -32,6 +32,8 @@ const ENV_CHAIN_IDS = {
   mainnet: 1,
   goerli: 5,
   mumbai: 80001,
+  europaTestnet: 1444673419,
+  opSepolia: 11155420,
 };
 
 module.exports = {
@@ -87,7 +89,19 @@ module.exports = {
     },
     skale: {
       url: PROVIDER_URL || '',
-      accounts: { mnemonic: MNEMONIC },
+      accounts: [process.env.PRIVATE_KEY],
+      chainId: ENV_CHAIN_IDS[NETWORK],
+      timeout: 300000,
+    },
+    europaTestnet: {
+      url: PROVIDER_URL || '',
+      accounts: [process.env.PRIVATE_KEY],
+      chainId: ENV_CHAIN_IDS[NETWORK],
+      timeout: 300000,
+    },
+    opSepolia: {
+      url: PROVIDER_URL || '',
+      accounts: [process.env.PRIVATE_KEY],
       chainId: ENV_CHAIN_IDS[NETWORK],
       timeout: 300000,
     },

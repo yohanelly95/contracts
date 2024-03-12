@@ -73,6 +73,9 @@ module.exports = async () => {
   const { contractInstance: governance } = await getdeployedContractInstance('Governance', governanceAddress);
   const { contractInstance: randomNoManager } = await getdeployedContractInstance('RandomNoManager', randomNoManagerAddress);
 
+  const provider = ethers.getDefaultProvider();
+  const feeData = await provider.getFeeData();
+  const { maxPriorityFeePerGas } = feeData;
   const pendingTransactions = [];
   const stakerAddressList = STAKER_ADDRESSES.split(',');
 
@@ -85,7 +88,10 @@ module.exports = async () => {
     await RAZOR.transfer(stakeManagerAddress, supply);
 
     for (let i = 0; i < stakerAddressList.length; i++) {
-      const tx = await RAZOR.transfer(stakerAddressList[i], SEED_AMOUNT);
+      const tx = await RAZOR.transfer(stakerAddressList[i], SEED_AMOUNT, {
+        maxPriorityFeePerGas,
+        maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+      });
       pendingTransactions.push(tx);
     }
   }
@@ -96,39 +102,126 @@ module.exports = async () => {
     await ethers.provider.send('evm_setIntervalMining', [MINING_INTERVAL]);
   }
 
-  pendingTransactions.push(await collectionManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await blockManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await rewardManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await stakeManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await voteManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await delegator.grantRole(GOVERNANCE_ROLE, governanceAddress));
-  pendingTransactions.push(await randomNoManager.grantRole(GOVERNANCE_ROLE, governanceAddress));
+  pendingTransactions.push(await collectionManager.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await blockManager.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await rewardManager.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await voteManager.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await delegator.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await randomNoManager.grantRole(GOVERNANCE_ROLE, governanceAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
 
-  pendingTransactions.push(await blockManager.grantRole(BLOCK_CONFIRMER_ROLE, voteManagerAddress));
-  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, voteManagerAddress));
-  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, stakeManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, rewardManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, voteManagerAddress));
-  pendingTransactions.push(await stakeManager.grantRole(ESCAPE_HATCH_ROLE, signers[0].address));
-  pendingTransactions.push(await collectionManager.grantRole(REGISTRY_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await collectionManager.grantRole(COLLECTION_MODIFIER_ROLE, signers[0].address));
-  pendingTransactions.push(await stakeManager.grantRole(PAUSE_ROLE, signers[0].address));
-  pendingTransactions.push(await governance.grantRole(GOVERNER_ROLE, signers[0].address));
-  pendingTransactions.push(await voteManager.grantRole(SALT_MODIFIER_ROLE, blockManagerAddress));
-  pendingTransactions.push(await voteManager.grantRole(DEPTH_MODIFIER_ROLE, collectionManagerAddress));
+  pendingTransactions.push(await blockManager.grantRole(BLOCK_CONFIRMER_ROLE, voteManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, blockManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, voteManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await rewardManager.grantRole(REWARD_MODIFIER_ROLE, stakeManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, rewardManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, blockManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.grantRole(STAKE_MODIFIER_ROLE, voteManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.grantRole(ESCAPE_HATCH_ROLE, signers[0].address, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await collectionManager.grantRole(REGISTRY_MODIFIER_ROLE, blockManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await collectionManager.grantRole(COLLECTION_MODIFIER_ROLE, signers[0].address, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.grantRole(PAUSE_ROLE, signers[0].address, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await governance.grantRole(GOVERNER_ROLE, signers[0].address, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await voteManager.grantRole(SALT_MODIFIER_ROLE, blockManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await voteManager.grantRole(DEPTH_MODIFIER_ROLE, collectionManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
 
   pendingTransactions.push(await blockManager.initialize(stakeManagerAddress, rewardManagerAddress, voteManagerAddress,
-    collectionManagerAddress, randomNoManagerAddress));
-  pendingTransactions.push(await voteManager.initialize(stakeManagerAddress, rewardManagerAddress, blockManagerAddress, collectionManagerAddress));
-  pendingTransactions.push(await stakeManager.initialize(RAZORAddress, rewardManagerAddress, voteManagerAddress, stakedTokenFactoryAddress));
-  pendingTransactions.push(await rewardManager.initialize(stakeManagerAddress, voteManagerAddress, blockManagerAddress, collectionManagerAddress));
-  pendingTransactions.push(await delegator.updateAddress(collectionManagerAddress, randomNoManagerAddress));
-  pendingTransactions.push(await randomNoManager.initialize(blockManagerAddress));
+    collectionManagerAddress, randomNoManagerAddress, {
+      maxPriorityFeePerGas,
+      maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+    }));
+  pendingTransactions.push(await voteManager.initialize(stakeManagerAddress, rewardManagerAddress, blockManagerAddress, collectionManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await stakeManager.initialize(RAZORAddress, rewardManagerAddress, voteManagerAddress, stakedTokenFactoryAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await rewardManager.initialize(stakeManagerAddress, voteManagerAddress, blockManagerAddress, collectionManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await delegator.updateAddress(collectionManagerAddress, randomNoManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
+  pendingTransactions.push(await randomNoManager.initialize(blockManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
   pendingTransactions.push(await governance.initialize(blockManagerAddress, rewardManagerAddress, stakeManagerAddress,
-    voteManagerAddress, collectionManagerAddress, randomNoManagerAddress));
-  pendingTransactions.push(await collectionManager.initialize(voteManagerAddress, blockManagerAddress));
+    voteManagerAddress, collectionManagerAddress, randomNoManagerAddress, {
+      maxPriorityFeePerGas,
+      maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+    }));
+  pendingTransactions.push(await collectionManager.initialize(voteManagerAddress, blockManagerAddress, {
+    maxPriorityFeePerGas,
+    maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+  }));
 
   console.log('Waiting for post-deployment setup transactions to get confirmed');
   for (let i = 0; i < pendingTransactions.length; i++) {
@@ -141,7 +234,10 @@ module.exports = async () => {
 
   for (let i = 0; i < jobs.length; i++) {
     const job = jobs[i];
-    await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url);
+    await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url, {
+      maxPriorityFeePerGas,
+      maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+    });
     console.log(`Job Created :  ${job.name}`);
   }
 
@@ -153,7 +249,10 @@ module.exports = async () => {
   for (let i = 0; i < collections.length; i++) {
     await waitForConfirmState(numStates, stateLength);
     const collection = collections[i];
-    await collectionManager.createCollection(collection.tolerance, collection.power, collection.aggregationMethod, collection.jobIDs, collection.name);
+    await collectionManager.createCollection(collection.tolerance, collection.power, collection.aggregationMethod, collection.jobIDs, collection.name, {
+      maxPriorityFeePerGas,
+      maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+    });
     console.log(`Collection Created :  ${collection.name}`);
   }
   console.log('Contracts deployed successfully & initial setup is done');
