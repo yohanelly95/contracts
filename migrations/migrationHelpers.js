@@ -67,24 +67,24 @@ const deployContract = async (
   await contract.deployed();
   await sleep(12000);
 
-  try {
-    await hre.tenderly.persistArtifacts({
-      name: contractName,
-      address: contract.address,
-    });
+  //   try {
+  //     await hre.tenderly.persistArtifacts({
+  //       name: contractName,
+  //       address: contract.address,
+  //     });
 
-    await hre.tenderly.push({
-      name: contractName,
-      address: contract.address,
-    });
+  //     await hre.tenderly.push({
+  //       name: contractName,
+  //       address: contract.address,
+  //     });
 
-    await hre.tenderly.verify({
-      name: contractName,
-      address: contract.address,
-    });
-  } catch (err) {
-    console.log('Error pushing to tenderly:', err);
-  }
+  //     await hre.tenderly.verify({
+  //       name: contractName,
+  //       address: contract.address,
+  //     });
+  //   } catch (err) {
+  //     console.log('Error pushing to tenderly:', err);
+  //   }
 
   await appendDeploymentFile({ [contractName]: contract.address });
   console.log(`${contractName} deployed to: ${contract.address}`);
@@ -103,11 +103,11 @@ const deployContract = async (
     config.contract = 'contracts/tokenization/RAZOR.sol:RAZOR';
   }
 
-  try {
-    await hre.run('verify:verify', config);
-  } catch (err) {
-    console.error('Etherscan verification failed', err);
-  }
+  //   try {
+  //     await hre.run('verify:verify', config);
+  //   } catch (err) {
+  //     console.error('Etherscan verification failed', err);
+  //   }
 
   return contract;
 };

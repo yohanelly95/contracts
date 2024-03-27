@@ -6,6 +6,7 @@ const {
   getJobs,
   getCollections,
   waitForConfirmState,
+  sleep,
 } = require('../migrationHelpers');
 
 const { BigNumber } = ethers;
@@ -78,14 +79,17 @@ module.exports = async () => {
   const { maxPriorityFeePerGas } = feeData;
   const pendingTransactions = [];
   const stakerAddressList = STAKER_ADDRESSES.split(',');
-
+  await sleep(20000);
   // Only transfer tokens in testnets
   if (NETWORK_TYPE === 'TESTNET') {
     // Add new instance of StakeManager contract & Deployer address as Minter
 
     const supply = (BigNumber.from(10).pow(BigNumber.from(23))).mul(BigNumber.from(5));
 
-    await RAZOR.transfer(stakeManagerAddress, supply);
+    await RAZOR.transfer(stakeManagerAddress, supply, {
+      maxPriorityFeePerGas,
+      maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
+    });
 
     for (let i = 0; i < stakerAddressList.length; i++) {
       const tx = await RAZOR.transfer(stakerAddressList[i], SEED_AMOUNT, {
@@ -231,7 +235,7 @@ module.exports = async () => {
   const jobs = await getJobs();
   const collections = await getCollections();
   console.log('Creating Jobs');
-
+  await sleep(20000);
   for (let i = 0; i < jobs.length; i++) {
     const job = jobs[i];
     await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url, {
@@ -254,6 +258,7 @@ module.exports = async () => {
       maxFeePerGas: maxPriorityFeePerGas.add(ethers.utils.parseUnits('2', 'gwei')), // Adjust this value based on your needs
     });
     console.log(`Collection Created :  ${collection.name}`);
+    await sleep(2000);
   }
   console.log('Contracts deployed successfully & initial setup is done');
 };
