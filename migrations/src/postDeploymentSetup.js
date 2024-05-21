@@ -6,6 +6,7 @@ const {
   getJobs,
   getCollections,
   waitForConfirmState,
+  sleep,
 } = require('../migrationHelpers');
 
 const { BigNumber } = ethers;
@@ -138,7 +139,7 @@ module.exports = async () => {
   const jobs = await getJobs();
   const collections = await getCollections();
   console.log('Creating Jobs');
-
+  await sleep(20000);
   for (let i = 0; i < jobs.length; i++) {
     const job = jobs[i];
     await collectionManager.createJob(job.weight, job.power, job.selectorType, job.name, job.selector, job.url);

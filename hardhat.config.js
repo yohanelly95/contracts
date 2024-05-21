@@ -32,6 +32,7 @@ const ENV_CHAIN_IDS = {
   mainnet: 1,
   goerli: 5,
   mumbai: 80001,
+  razorOpTestnet: 11106812,
 };
 
 module.exports = {
@@ -88,6 +89,12 @@ module.exports = {
     skale: {
       url: PROVIDER_URL || '',
       accounts: { mnemonic: MNEMONIC },
+      chainId: ENV_CHAIN_IDS[NETWORK],
+      timeout: 300000,
+    },
+    razorOpTestnet: {
+      url: PROVIDER_URL || '',
+      accounts: [process.env.PRIVATE_KEY],
       chainId: ENV_CHAIN_IDS[NETWORK],
       timeout: 300000,
     },
