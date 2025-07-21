@@ -124,7 +124,7 @@ const getdeployedContractInstance = async (
   return { Contract, contractInstance };
 };
 
-const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master/mainnet';
+const SOURCE = 'https://raw.githubusercontent.com/razor-network/datasources/master/testnet';
 
 const getJobs = async () => {
   try {

@@ -24,6 +24,7 @@ const {
   CMC_KEY,
   ETHERSCAN_KEY,
   TENDERLY_SLUG,
+  PRIVATE_KEY,
 } = process.env;
 
 // Ref - https://chainid.network/chains.json
@@ -31,7 +32,7 @@ const ENV_CHAIN_IDS = {
   mainnet: 1,
   goerli: 5,
   mumbai: 80001,
-  skale: 2046399126,
+  skale: 1444673419,
 };
 
 module.exports = {
@@ -86,7 +87,10 @@ module.exports = {
       timeout: 300000,
     },
     skale: {
-      url: 'http://127.0.0.1:1248', // this is the RPC endpoint exposed by Frame,
+      url: 'https://testnet.skalenodes.com/v1/juicy-low-small-testnet', // this is the RPC endpoint exposed by Frame,
+      accounts: [
+        PRIVATE_KEY,
+      ],
       chainId: ENV_CHAIN_IDS[NETWORK],
       timeout: 300000,
     },
